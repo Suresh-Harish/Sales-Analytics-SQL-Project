@@ -279,6 +279,14 @@ on p.product_id = s.product_id
 group by c.category_id,c.category_name
 order by sale_volume Desc;
 
+SECTION 4 : VIEWS FOR REUSABILITY
+-- Purpose: Save frequently used query logic as virtual tables
+-- to simplify reporting and avoid repetitive joins
+-- ============================================================
+ 
+-- View 1: Monthly Revenue Summary
+-- Reused in: MoM Growth, Net Revenue analysis
+ 
 CREATE VIEW v_monthly_revenue_summary AS
 SELECT 
     YEAR(sale_date) AS sales_year,
@@ -287,10 +295,14 @@ SELECT
     ROUND(SUM(amount), 0) AS Total_Revenue
 FROM sales
 GROUP BY YEAR(sale_date), MONTH(sale_date), DATE_FORMAT(sale_date, '%b-%y');
-
-SELECT * FROM v_monthly_revenue_summary ORDER BY sales_year, sales_month;
-
-
+ 
+-- Usage:
+-- SELECT * FROM v_monthly_revenue_summary ORDER BY sales_year, sales_month;
+ 
+ 
+-- View 2: Customer Revenue Summary
+-- Reused in: Top 10 customers, Pareto analysis, AOV queries
+ 
 CREATE VIEW v_customer_revenue_summary AS
 SELECT 
     c.customer_id,
@@ -303,4 +315,34 @@ INNER JOIN orders o ON c.customer_id = o.customer_id
 GROUP BY c.customer_id, c.customer_name;
  
 -- Usage:
-SELECT * FROM v_customer_revenue_summary ORDER BY Total_Revenue DESC LIMIT 10;
+-- SELECT * FROM v_customer_revenue_summary ORDER BY Total_Revenue DESC LIMIT 10;
+ 
+ 
+-- View 3: Product & Category Sales Summary
+-- Reused in: Category revenue, product volume, performance queries
+ 
+CREATE VIEW v_product_sales_summary AS
+SELECT 
+    p.product_id,
+    p.product_name,
+    c.category_name,
+    COALESCE(SUM(s.quantity), 0) AS Total_Quantity_Sold,
+    ROUND(COALESCE(SUM(s.amount), 0), 0) AS Total_Revenue
+FROM products p
+INNER JOIN categories c ON p.category_id = c.category_id
+LEFT JOIN sales s ON p.product_id = s.product_id
+GROUP BY p.product_id, p.product_name, c.category_name;
+ 
+-- Usage:
+-- SELECT * FROM v_product_sales_summary ORDER BY Total_Revenue DESC;
+-- SELECT category_name, SUM(Total_Revenue) FROM v_product_sales_summary GROUP BY category_name;
+ 
+-- ============================================================
+-- END OF PROJECT : Sales & Customer Performance Analysis
+-- ============================================================
+
+
+
+
+
+
