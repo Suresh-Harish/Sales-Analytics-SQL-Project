@@ -138,7 +138,7 @@ SELECT * FROM v_product_sales_summary ORDER BY Total_Revenue DESC;
 ```
 Sales-Customer-Performance-Analysis/
 ├── README.md            → Project overview, schema, findings
-└── sales_analysis.sql   → Data exploration + 11 queries + 3 Views
+└── SQL_analytical.sql   → Data exploration + 11 queries + 3 Views
 ```
 
 
