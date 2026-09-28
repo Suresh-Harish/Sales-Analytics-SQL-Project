@@ -1,4 +1,4 @@
-Use Kowsi;
+Use SalesFile;
 CREATE TABLE addresses (
     address_id INT,
     address varchar(255),
